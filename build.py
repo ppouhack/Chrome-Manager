@@ -5,27 +5,27 @@ import subprocess
 from typing import List
 
 def check_and_install_packages(packages: List[str]):
-    """检查并安装所需的包"""
-    print("检查并安装必要的包...")
+    """필요한 패키지 확인 및 설치"""
+    print("필요한 패키지 확인 및 설치 중...")
     
     for package in packages:
         try:
             __import__(package)
-            print(f"✓ {package} 已安装")
+            print(f"✓ {package} 이(가) 설치되어 있습니다")
         except ImportError:
-            print(f"正在安装 {package}...")
+            print(f"{package} 설치 중...")
             subprocess.run([sys.executable, "-m", "pip", "install", package], check=True)
-            print(f"✓ {package} 安装成功")
+            print(f"✓ {package} 설치 완료")
 
 def install_requirements():
-    """安装所需的依赖包"""
+    """필요한 의존성 패키지 설치"""
     required_packages = [
-        "pyinstaller",  # 用于打包
-        "sv_ttk",      # 用于主题
-        "keyboard",    # 用于键盘监听
-        "mouse",       # 用于鼠标监听
-        "pywin32",     # 用于Windows API
-        "typing-extensions"  # 用于类型提示
+        "pyinstaller",  # 패키징용
+        "sv_ttk",      # 테마용
+        "keyboard",    # 키보드 감지용
+        "mouse",       # 마우스 감지용
+        "pywin32",     # Windows API용
+        "typing-extensions"  # 타입 힌트용
     ]
     
     
@@ -33,13 +33,13 @@ def install_requirements():
         try:
             subprocess.check_call([sys.executable, "-m", "pip", "install", package])
         except subprocess.CalledProcessError as e:
-            print(f"安装 {package} 失败: {str(e)}")
+            print(f"설치 {package} 실패: {str(e)}")
             return False
     return True
 
 def build():
-    """打包程序"""
-    # 需要的包列表
+    """프로그램 패키징"""
+    # 필요한 패키지 목록
     required_packages = [
         "pyinstaller",
         "sv_ttk",
@@ -48,24 +48,24 @@ def build():
         "pywin32"
     ]
     
-    # 检查并安装必要的包
+    # 필요한 패키지 확인 및 설치
     check_and_install_packages(required_packages)
     
-    # 导入需要的模块（在安装后导入）
+    # 필요한 모듈 임포트 (설치 후 임포트)
     import sv_ttk
     
-    print("\n开始打包程序...")
+    print("\n프로그램 패키징 시작...")
     
-    # 清理旧的构建文件
+    # 기존 빌드 파일 정리
     if os.path.exists('build'):
         shutil.rmtree('build')
     if os.path.exists('dist'):
         shutil.rmtree('dist')
     
-    # 获取 sv_ttk 路径
+    # sv_ttk 경로 가져오기
     sv_ttk_path = os.path.dirname(sv_ttk.__file__)
     
-    # 创建 spec 文件内容
+    # spec 파일 내용 작성
     spec_content = f'''# -*- mode: python ; coding: utf-8 -*-
 
 a = Analysis(
@@ -104,11 +104,11 @@ exe = EXE(
 )
 '''
     
-    # 写入 spec 文件
+    # spec 파일 작성
     with open('chrome_manager.spec', 'w', encoding='utf-8') as f:
         f.write(spec_content)
     
-    # 创建app.manifest文件
+    # app.manifest 파일 작성
     with open('app.manifest', 'w') as f:
         f.write('''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
@@ -121,14 +121,14 @@ exe = EXE(
     </trustInfo>
     </assembly>''')
     
-    # 运行 PyInstaller
+    # PyInstaller 실행
     subprocess.run(['pyinstaller', 'chrome_manager.spec'])
     
-    print("\n打包完成！程序文件在 dist 文件夹中。")
+    print("\n패키징 완료! 프로그램 파일이 dist 폴더에 생성되었습니다.")
 
 if __name__ == "__main__":
     try:
         build()
     except Exception as e:
-        print(f"\n错误: {str(e)}")
-        input("\n按回车键退出...") 
+        print(f"\n오류: {str(e)}")
+        input("\n종료하려면 엔터 키를 누르세요...") 
